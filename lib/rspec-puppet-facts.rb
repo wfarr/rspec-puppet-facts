@@ -66,9 +66,19 @@ module RspecPuppetFacts
 
   # @api private
   def self.get_metadata
-    if ! File.file?('metadata.json')
-      fail StandardError, "Can't find metadata.json... dunno why"
+    dir = Dir.pwd
+
+    while !dir.empty?
+      require "pry"
+      binding.pry
+
+      if File.exists?("#{dir}/metadata.json")
+        return JSON.parse(File.read("metadata.json"))
+      end
+
+      dir = dir.rpartition("/").first
     end
-    JSON.parse(File.read('metadata.json'))
+
+    fail StandardError, "Could not find metadata.json in #{Dir.pwd} or any of its parent directories"
   end
 end
